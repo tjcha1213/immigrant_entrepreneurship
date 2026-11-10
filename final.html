@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Built by Immigrants, Threatened by Policy</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0a1628;--navy-mid:#111d33;--navy-light:#1a2d4a;
+  --gold:#d4a853;--gold-dim:#b8913a;
+  --crimson:#a3243b;--crimson-bright:#c93050;
+  --ice:#e8edf5;--ice-dim:#9aa8c2;
+  --teal:#2ec4b6;--teal-dim:#1a8a7e;
+  --ff-display:'Playfair Display',Georgia,serif;
+  --ff-body:'Source Sans 3','Segoe UI',sans-serif;
+  --ff-mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--navy);color:var(--ice);font-family:var(--ff-body);line-height:1.6;overflow-x:hidden}
+::selection{background:var(--gold);color:var(--navy)}
+
+/* ─── NAV ──────────────────────────────────── */
+nav{position:fixed;top:2.2rem;left:0;right:0;z-index:100;padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;background:rgba(10,22,40,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,168,83,.1);transition:transform .3s}
+nav.hidden{transform:translateY(-100%)}
+.nav-brand{font-family:var(--ff-display);font-size:.9rem;letter-spacing:.08em;color:var(--gold);text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--ice-dim);text-decoration:none;font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--gold);transition:width .3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-links a:hover,.nav-links a.active{color:var(--gold)}
+
+/* ─── HERO ─────────────────────────────────── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(26,45,74,.6) 0%,transparent 70%),radial-gradient(ellipse at 70% 30%,rgba(163,36,59,.08) 0%,transparent 60%)}
+.hero-eyebrow{font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .3s forwards}
+.hero h1{font-family:var(--ff-display);font-size:clamp(2.5rem,6vw,5.5rem);font-weight:900;line-height:1.05;max-width:14ch;margin-bottom:1rem;opacity:0;animation:fadeUp .8s .5s forwards}
+.hero h1 em{font-style:italic;color:var(--gold);display:inline}
+.hero-sub{font-size:clamp(1rem,2vw,1.3rem);font-weight:300;color:var(--ice-dim);max-width:50ch;margin-bottom:2.5rem;opacity:0;animation:fadeUp .8s .7s forwards}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.2rem;border:1px solid rgba(212,168,83,.3);border-radius:100px;font-size:.75rem;color:var(--gold-dim);font-family:var(--ff-mono);letter-spacing:.05em;opacity:0;animation:fadeUp .8s .9s forwards}
+.scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);opacity:0;animation:fadeUp .8s 1.2s forwards}
+.scroll-cue span{display:block;width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);margin:0 auto .3rem;animation:pulse 2s infinite}
+.scroll-cue small{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ice-dim)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ─── SECTIONS ─────────────────────────────── */
+section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
+.act-label{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.section-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.section-desc{font-size:1.1rem;color:var(--ice-dim);max-width:65ch;margin-bottom:3rem;font-weight:300}
+.divider{width:60px;height:2px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:3rem}
+
+/* ─── REVEAL ───────────────────────────────── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ─── ACT 1 — COMPANY GRID ────────────────── */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:3rem}
+.company-card{position:relative;background:var(--navy-mid);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .3s;overflow:hidden}
+.company-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,83,.08),transparent);opacity:0;transition:opacity .3s}
+.company-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 8px 30px rgba(212,168,83,.1)}
+.company-card:hover::before{opacity:1}
+.company-card .icon{font-size:2.2rem;margin-bottom:.5rem;display:block}
+.company-card .name{font-weight:700;font-size:.95rem;margin-bottom:.25rem}
+.company-card .founder{font-size:.7rem;color:var(--ice-dim);opacity:0;transform:translateY(5px);transition:all .3s}
+.company-card:hover .founder{opacity:1;transform:translateY(0)}
+.company-card .origin-flag{position:absolute;top:8px;right:8px;font-size:.8rem;opacity:0;transition:opacity .3s}
+.company-card:hover .origin-flag{opacity:1}
+
+/* ─── BILLBOARD NUMBERS ────────────────────── */
+.billboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-bottom:4rem}
+.stat-card{background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:2rem 1.5rem;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--gold),var(--crimson-bright),var(--teal))}
+.stat-num{font-family:var(--ff-display);font-size:clamp(2.2rem,4vw,3.2rem);font-weight:900;color:var(--gold);line-height:1}
+.stat-label{font-size:.85rem;color:var(--ice-dim);margin-top:.5rem;font-weight:300}
+.stat-source{font-family:var(--ff-mono);font-size:.6rem;color:rgba(154,168,194,.5);margin-top:.5rem}
+
+/* ─── CHARTS ───────────────────────────────── */
+.chart-wrap{background:var(--navy-mid);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:1.5rem;margin-bottom:2rem;position:relative}
+.chart-wrap h3{font-family:var(--ff-display);font-size:1.2rem;margin-bottom:.3rem}
+.chart-wrap .chart-sub{font-size:.8rem;color:var(--ice-dim);margin-bottom:1rem;font-weight:300}
+.chart-container{position:relative;width:100%;max-height:400px}
+.chart-container canvas{max-height:400px}
+
+/* ─── HEATMAP ──────────────────────────────── */
+.heatmap-table{width:100%;border-collapse:separate;border-spacing:3px;font-size:.7rem;margin-bottom:2rem}
+.heatmap-table th{font-family:var(--ff-mono);font-weight:600;color:var(--ice-dim);padding:.5rem .3rem;text-align:center;font-size:.6rem;letter-spacing:.03em}
+.heatmap-table th:first-child{text-align:left;min-width:80px}
+.heatmap-table td{text-align:center;padding:.4rem;border-radius:3px;font-weight:700;font-family:var(--ff-mono);min-width:32px;transition:transform .2s}
+.heatmap-table td:hover{transform:scale(1.15);z-index:1}
+.heatmap-table td:first-child{text-align:left;font-family:var(--ff-body);font-weight:600;color:var(--ice);background:transparent !important}
+.h0{background:rgba(255,255,255,.03);color:rgba(255,255,255,.15)}
+.h1{background:rgba(46,196,182,.12);color:rgba(46,196,182,.6)}
+.h2{background:rgba(46,196,182,.22);color:rgba(46,196,182,.8)}
+.h3{background:rgba(212,168,83,.25);color:var(--gold-dim)}
+.h4{background:rgba(212,168,83,.4);color:var(--gold)}
+.h5{background:rgba(201,48,80,.5);color:#ff8a9e}
+
+/* ─── TREEMAP ──────────────────────────────── */
+.treemap{display:grid;gap:4px;grid-template-columns:1fr 1fr;grid-template-rows:auto;margin-bottom:2rem}
+.treemap-item{border-radius:6px;padding:1rem;display:flex;flex-direction:column;justify-content:center;min-height:80px;transition:transform .2s;cursor:default;position:relative;overflow:hidden}
+.treemap-item:hover{transform:scale(1.02)}
+.treemap-item .tm-val{font-family:var(--ff-display);font-weight:900;font-size:1.6rem;line-height:1}
+.treemap-item .tm-name{font-weight:700;font-size:.85rem;margin-bottom:.2rem}
+.treemap-item .tm-origin{font-size:.65rem;opacity:.7;font-family:var(--ff-mono)}
+.treemap-item.tm-xl{grid-column:span 2;min-height:110px}
+.treemap-item.tm-xl .tm-val{font-size:2.2rem}
+
+/* ─── TIMELINE ─────────────────────────────── */
+.timeline{position:relative;padding:2rem 0 2rem 30px;margin-bottom:3rem}
+.timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--gold),var(--crimson),var(--teal),var(--gold))}
+.tl-item{position:relative;margin-bottom:1.2rem;padding-left:2rem}
+.tl-item::before{content:'';position:absolute;left:-22px;top:6px;width:10px;height:10px;border-radius:50%;border:2px solid;transition:transform .2s}
+.tl-item:hover::before{transform:scale(1.4)}
+.tl-item.tl-expand::before{border-color:var(--teal);background:rgba(46,196,182,.3)}
+.tl-item.tl-restrict::before{border-color:var(--crimson-bright);background:rgba(201,48,80,.3)}
+.tl-item .tl-date{font-family:var(--ff-mono);font-size:.6rem;color:var(--ice-dim);letter-spacing:.05em}
+.tl-item .tl-text{font-size:.8rem;font-weight:400;line-height:1.4}
+.tl-item.tl-critical .tl-text{font-weight:700}
+.tl-era{font-family:var(--ff-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;display:inline-block;padding:.15rem .5rem;border-radius:3px;margin-left:.5rem}
+.era-obama{background:rgba(41,128,185,.2);color:#5dade2}
+.era-trump{background:rgba(201,48,80,.2);color:#f1948a}
+.era-biden{background:rgba(46,196,182,.2);color:var(--teal)}
+
+/* ─── KPI ROW ──────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:3rem}
+.kpi{background:var(--navy-mid);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:1.5rem;text-align:center;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.kpi-red::before{background:var(--crimson-bright)}
+.kpi.kpi-gold::before{background:var(--gold)}
+.kpi.kpi-teal::before{background:var(--teal)}
+.kpi .kpi-num{font-family:var(--ff-display);font-size:2rem;font-weight:900;line-height:1}
+.kpi.kpi-red .kpi-num{color:var(--crimson-bright)}
+.kpi.kpi-gold .kpi-num{color:var(--gold)}
+.kpi.kpi-teal .kpi-num{color:var(--teal)}
+.kpi .kpi-label{font-size:.75rem;color:var(--ice-dim);margin-top:.4rem;font-weight:300}
+
+/* ─── SCORECARD ────────────────────────────── */
+.scorecard{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:2rem}
+.scorecard th{font-family:var(--ff-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ice-dim);padding:.6rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.08)}
+.scorecard td{padding:.6rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.scorecard tr:hover td{background:rgba(255,255,255,.02)}
+.sc-badge{display:inline-block;padding:.15rem .5rem;border-radius:3px;font-size:.65rem;font-weight:700;font-family:var(--ff-mono)}
+.sc-yes{background:rgba(46,196,182,.15);color:var(--teal)}
+.sc-no{background:rgba(201,48,80,.15);color:var(--crimson-bright)}
+.sc-partial{background:rgba(212,168,83,.15);color:var(--gold)}
+.sc-verdict{display:inline-flex;align-items:center;gap:.3rem;font-weight:700;font-size:.75rem}
+.sc-verdict.v-false{color:var(--teal)}
+.sc-verdict.v-true{color:var(--crimson-bright)}
+.sc-verdict.v-mixed{color:var(--gold)}
+
+/* ─── FOOTER ───────────────────────────────── */
+footer{text-align:center;padding:4rem 2rem;border-top:1px solid rgba(255,255,255,.05)}
+footer p{font-size:.75rem;color:var(--ice-dim);font-weight:300}
+footer .foot-brand{font-family:var(--ff-display);font-size:1rem;color:var(--gold);margin-bottom:.5rem}
+
+/* ─── CTA ──────────────────────────────────── */
+.cta-box{background:linear-gradient(135deg,rgba(163,36,59,.15),rgba(212,168,83,.1));border:1px solid rgba(212,168,83,.2);border-radius:12px;padding:3rem;text-align:center;margin:3rem 0}
+.cta-box h3{font-family:var(--ff-display);font-size:1.8rem;margin-bottom:1rem}
+.cta-box p{color:var(--ice-dim);max-width:55ch;margin:0 auto 1.5rem;font-weight:300}
+.takeaway-list{list-style:none;text-align:left;max-width:700px;margin:0 auto}
+.takeaway-list li{padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.9rem;padding-left:1.5rem;position:relative}
+.takeaway-list li::before{content:'';position:absolute;left:0;top:1.1rem;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+
+/* ─── RESPONSIVE ───────────────────────────── */
+@media(max-width:768px){
+  nav{padding:.5rem 1rem}
+  .nav-links{display:none}
+  section{padding:3rem 1rem}
+  .billboard{grid-template-columns:1fr 1fr}
+  .company-grid{grid-template-columns:repeat(3,1fr)}
+  .treemap{grid-template-columns:1fr}
+  .treemap-item.tm-xl{grid-column:span 1}
+  .heatmap-table{font-size:.55rem}
+  .kpi-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .billboard{grid-template-columns:1fr}
+  .company-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- FINAL DELIVERABLE BANNER -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:200;background:linear-gradient(90deg,var(--gold),var(--gold-dim));color:var(--navy);text-align:center;padding:.5rem 1rem;font-family:var(--ff-display);font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;">Final Deliverable</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-brand">Harvard · Data Viz 2025</div>
+  <ul class="nav-links">
+    <li><a href="#act1">Hook</a></li>
+    <li><a href="#act2">Scale</a></li>
+    <li><a href="#act3">Ecosystem</a></li>
+    <li><a href="#act4">Policy</a></li>
+    <li><a href="#act5">So What</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <p class="hero-eyebrow">Harvard University · Data Visualization · Spring 2025</p>
+  <h1>Built by <em>Immigrants,</em> Threatened by Policy</h1>
+  <p class="hero-sub">Visualizing the impact of immigrant entrepreneurs on the U.S. innovation economy — and what we stand to lose.</p>
+  <span class="hero-badge">◆ Interactive Data Story — 8 min read</span>
+  <div class="scroll-cue"><span></span><small>Scroll</small></div>
+</header>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- ACT 1 — HOOK                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="act1">
+  <div class="reveal">
+    <p class="act-label">Act I</p>
+    <h2 class="section-title">How many services did you<br>use today that were founded<br>by immigrants?</h2>
+    <div class="divider"></div>
+    <p class="section-desc">Google. YouTube. Zoom. Tesla. WhatsApp. Stripe. The products you rely on every day were built by people who came to America from somewhere else. Hover over each to learn more.</p>
+  </div>
+
+  <div class="company-grid reveal">
+    <div class="company-card" data-company="Google"><span class="origin-flag">🇷🇺</span><span class="icon">🔍</span><span class="name">Google</span><span class="founder">Sergey Brin · Russia · 1998</span></div>
+    <div class="company-card"><span class="origin-flag">🇹🇼</span><span class="icon">🎬</span><span class="name">YouTube</span><span class="founder">Steve Chen · Taiwan · 2005</span></div>
+    <div class="company-card"><span class="origin-flag">🇨🇳</span><span class="icon">📹</span><span class="name">Zoom</span><span class="founder">Eric Yuan · China · 2011</span></div>
+    <div class="company-card"><span class="origin-flag">🇿🇦</span><span class="icon">⚡</span><span class="name">Tesla</span><span class="founder">Elon Musk · South Africa · 2003</span></div>
+    <div class="company-card"><span class="origin-flag">🇺🇦</span><span class="icon">💬</span><span class="name">WhatsApp</span><span class="founder">Jan Koum · Ukraine · 2009</span></div>
+    <div class="company-card"><span class="origin-flag">🇮🇪</span><span class="icon">💳</span><span class="name">Stripe</span><span class="founder">Collison Brothers · Ireland · 2010</span></div>
+    <div class="company-card"><span class="origin-flag">🇹🇼</span><span class="icon">🖥️</span><span class="name">NVIDIA</span><span class="founder">Jensen Huang · Taiwan · 1993</span></div>
+    <div class="company-card"><span class="origin-flag">🇨🇳</span><span class="icon">🍔</span><span class="name">DoorDash</span><span class="founder">Tony Xu · China · 2013</span></div>
+    <div class="company-card"><span class="origin-flag">🇮🇷</span><span class="icon">🛒</span><span class="name">eBay</span><span class="founder">Pierre Omidyar · Iran/France · 1995</span></div>
+    <div class="company-card"><span class="origin-flag">🇮🇳</span><span class="icon">🛵</span><span class="name">Instacart</span><span class="founder">Apoorva Mehta · India · 2012</span></div>
+    <div class="company-card"><span class="origin-flag">🇩🇪</span><span class="icon">💊</span><span class="name">Pfizer</span><span class="founder">Charles Pfizer · Germany · 1849</span></div>
+    <div class="company-card"><span class="origin-flag">🇱🇧</span><span class="icon">💉</span><span class="name">Moderna</span><span class="founder">Noubar Afeyan · Lebanon · 2010</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- ACT 2 — SCALE                              -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="act2">
+  <div class="reveal">
+    <p class="act-label">Act II</p>
+    <h2 class="section-title">An Undeniable Scale</h2>
+    <div class="divider"></div>
+    <p class="section-desc">Immigrants are ~14% of the U.S. population. Their outsized impact on innovation is not anecdotal — it's structural.</p>
+  </div>
+
+  <!-- Billboard Stats -->
+  <div class="billboard reveal">
+    <div class="stat-card"><div class="stat-num" data-count="46.2" data-suffix="%">0%</div><div class="stat-label">of Fortune 500 companies founded by immigrants or their children</div><div class="stat-source">American Immigration Council, 2025</div></div>
+    <div class="stat-card"><div class="stat-num" data-count="55" data-suffix="%">0%</div><div class="stat-label">of U.S. unicorn startups have an immigrant founder</div><div class="stat-source">NFAP, 2022</div></div>
+    <div class="stat-card"><div class="stat-num" data-prefix="$" data-count="8.6" data-suffix="T">$0T</div><div class="stat-label">annual revenue from immigrant-founded Fortune 500 firms</div><div class="stat-source">World's 3rd-largest economy equivalent</div></div>
+    <div class="stat-card"><div class="stat-num" data-count="36" data-suffix="%">0%</div><div class="stat-label">of all U.S. patent innovation involves immigrant inventors</div><div class="stat-source">NBER Working Paper 30797, 2023</div></div>
+  </div>
+
+  <!-- Donut: Fortune 500 -->
+  <div class="chart-wrap reveal">
+    <h3>Fortune 500: Who Built Them?</h3>
+    <p class="chart-sub">231 of 500 Fortune 500 companies were founded by immigrants or their children — generating $8.6T in annual revenue and employing 15.4 million people.</p>
+    <div class="chart-container"><canvas id="chartDonut500"></canvas></div>
+  </div>
+
+  <!-- Bar: Immigrant Premium -->
+  <div class="chart-wrap reveal">
+    <h3>The Immigrant Premium</h3>
+    <p class="chart-sub">Immigrants are ~14% of the population but punch far above their weight across every innovation metric.</p>
+    <div class="chart-container"><canvas id="chartPremium"></canvas></div>
+  </div>
+
+  <!-- Treemap: Market Cap -->
+  <div class="reveal">
+    <h3 style="font-family:var(--ff-display);margin-bottom:.3rem">Market Cap: $13.8 Trillion</h3>
+    <p style="font-size:.85rem;color:var(--ice-dim);margin-bottom:1.5rem">The top 6 immigrant-connected companies represent ~23% of the entire S&P 500.</p>
+  </div>
+  <div class="treemap reveal">
+    <div class="treemap-item tm-xl" style="background:linear-gradient(135deg,#2c3e50,#34495e)"><span class="tm-name">Apple</span><span class="tm-val">$3.5T</span><span class="tm-origin">Steve Jobs · Father from Syria</span></div>
+    <div class="treemap-item tm-xl" style="background:linear-gradient(135deg,#1a5c3a,#27ae60)"><span class="tm-name">NVIDIA</span><span class="tm-val">$3.4T</span><span class="tm-origin">Jensen Huang · Taiwan 🇹🇼</span></div>
+    <div class="treemap-item" style="background:linear-gradient(135deg,#1a3c6e,#2980b9)"><span class="tm-name">Alphabet</span><span class="tm-val">$2.3T</span><span class="tm-origin">Sergey Brin · Russia 🇷🇺</span></div>
+    <div class="treemap-item" style="background:linear-gradient(135deg,#6e4b1a,#e67e22)"><span class="tm-name">Amazon</span><span class="tm-val">$2.3T</span><span class="tm-origin">Jeff Bezos · Stepfather from Cuba</span></div>
+    <div class="treemap-item" style="background:linear-gradient(135deg,#5b1a1a,#c0392b)"><span class="tm-name">Tesla</span><span class="tm-val">$1.3T</span><span class="tm-origin">Elon Musk · South Africa 🇿🇦</span></div>
+    <div class="treemap-item" style="background:linear-gradient(135deg,#1a2a5c,#8e44ad)"><span class="tm-name">Broadcom</span><span class="tm-val">$1.0T</span><span class="tm-origin">Henry Samueli · Parents from Poland</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- ACT 3 — ECOSYSTEM                          -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="act3">
+  <div class="reveal">
+    <p class="act-label">Act III</p>
+    <h2 class="section-title">Who, Where, and What</h2>
+    <div class="divider"></div>
+    <p class="section-desc">The immigrant founder ecosystem spans 65 countries, clusters in specific industries, and concentrates in a handful of U.S. innovation hubs.</p>
+  </div>
+
+  <!-- Bubble Chart: Origin x Industry -->
+  <div class="chart-wrap reveal">
+    <h3>Billion-Dollar Startups by Country of Origin</h3>
+    <p class="chart-sub">India leads with 66 companies, followed by Israel (54), the UK (27), Canada (22), and China/Taiwan (21). Source: NFAP 2022</p>
+    <div class="chart-container"><canvas id="chartOrigin"></canvas></div>
+  </div>
+
+  <!-- Heatmap -->
+  <div class="reveal">
+    <h3 style="font-family:var(--ff-display);margin-bottom:.3rem">Country × Industry Concentration</h3>
+    <p style="font-size:.8rem;color:var(--ice-dim);margin-bottom:1rem">Scale: 0 (none) → 5 (world-leading). Each country has signature strengths.</p>
+  </div>
+  <div class="reveal" style="overflow-x:auto">
+    <table class="heatmap-table" id="heatmapTable"></table>
+  </div>
+
+  <!-- US Geography -->
+  <div class="chart-wrap reveal">
+    <h3>U.S. Geographic Concentration</h3>
+    <p class="chart-sub">California alone accounts for 66% of immigrant-founded billion-dollar startups.</p>
+    <div class="chart-container"><canvas id="chartGeo"></canvas></div>
+  </div>
+
+  <!-- Visa Pathway -->
+  <div class="chart-wrap reveal">
+    <h3>How They Got Here: Visa Pathways</h3>
+    <p class="chart-sub">72% of immigrant AI startup founders first arrived on student visas (F-1). Source: CSET Georgetown</p>
+    <div class="chart-container"><canvas id="chartVisa"></canvas></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- ACT 4 — POLICY REALITY                     -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="act4">
+  <div class="reveal">
+    <p class="act-label">Act IV</p>
+    <h2 class="section-title">The Policy Reality</h2>
+    <div class="divider"></div>
+    <p class="section-desc">The walls are getting higher. H-1B denial rates have swung wildly with each administration, and new barriers — including a $100,000 application fee — threaten the pipeline.</p>
+  </div>
+
+  <!-- Line Chart: Denial Rates -->
+  <div class="chart-wrap reveal">
+    <h3>The Denial Rate Rollercoaster</h3>
+    <p class="chart-sub">H-1B initial employment denial rates, FY 2010–2025. Background bands show policy eras. Source: NFAP, Pew Research</p>
+    <div class="chart-container"><canvas id="chartDenial"></canvas></div>
+  </div>
+
+  <!-- Green Card Backlog -->
+  <div class="chart-wrap reveal">
+    <h3>The Green Card Trap</h3>
+    <p class="chart-sub">Employment-based green card wait times by country. Indian applicants face 10–13 year waits. Source: Fragomen 2025</p>
+    <div class="chart-container"><canvas id="chartBacklog"></canvas></div>
+  </div>
+
+  <!-- Policy Timeline -->
+  <div class="reveal">
+    <h3 style="font-family:var(--ff-display);margin-bottom:.3rem">Key Policy Events, 2012–2026</h3>
+    <p style="font-size:.8rem;color:var(--ice-dim);margin-bottom:1.5rem">Green = expansive, Red = restrictive. Bold = critical impact.</p>
+  </div>
+  <div class="timeline reveal" id="policyTimeline"></div>
+
+  <!-- Brain Drain KPIs -->
+  <div class="reveal">
+    <h3 style="font-family:var(--ff-display);margin-bottom:.3rem">The Brain Drain Is Real</h3>
+    <p style="font-size:.8rem;color:var(--ice-dim);margin-bottom:1.5rem">Evidence of talent flight is mounting across every indicator.</p>
+  </div>
+  <div class="kpi-row reveal">
+    <div class="kpi kpi-red"><div class="kpi-num">82%</div><div class="kpi-label">of employers lost foreign workers to visa issues</div></div>
+    <div class="kpi kpi-red"><div class="kpi-num">75%+</div><div class="kpi-label">of U.S. scientists considering leaving</div></div>
+    <div class="kpi kpi-gold"><div class="kpi-num">1.3M</div><div class="kpi-label">Indians renounced citizenship (2015–2024)</div></div>
+    <div class="kpi kpi-teal"><div class="kpi-num">+407%</div><div class="kpi-label">growth in Canada Startup Visa approvals</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- ACT 5 — SO WHAT                            -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="act5">
+  <div class="reveal">
+    <p class="act-label">Act V</p>
+    <h2 class="section-title">So What?</h2>
+    <div class="divider"></div>
+    <p class="section-desc">The cost of restriction is not hypothetical. We can model it. And history has already shown us what happens when America closes its doors.</p>
+  </div>
+
+  <!-- Scenario GDP -->
+  <div class="chart-wrap reveal">
+    <h3>GDP Impact: Three Scenarios (2025–2035)</h3>
+    <p class="chart-sub">Cumulative GDP change relative to baseline. Restriction costs $12.1 trillion; reform adds $456B from H-1B expansion alone. Sources: NFAP, Hoover Institution</p>
+    <div class="chart-container"><canvas id="chartGDP"></canvas></div>
+  </div>
+
+  <!-- 1920s Precedent -->
+  <div class="chart-wrap reveal">
+    <h3>History's Warning: The 1920s Restriction</h3>
+    <p class="chart-sub">When America restricted immigration in 1924, U.S. invention declined 30% — and the effects persisted for 40 years. Source: Stanford GSB</p>
+    <div class="chart-container"><canvas id="chart1920s"></canvas></div>
+  </div>
+
+  <!-- Global Competition -->
+  <div class="reveal">
+    <h3 style="font-family:var(--ff-display);margin-bottom:.3rem">Global Talent Competition</h3>
+    <p style="font-size:.8rem;color:var(--ice-dim);margin-bottom:1rem">While the U.S. makes it harder, competitors roll out the red carpet.</p>
+  </div>
+  <div class="reveal" style="overflow-x:auto">
+    <table class="scorecard">
+      <thead><tr><th>Country</th><th>Program</th><th>Processing</th><th>Startup Visa</th><th>Recruiting US Talent</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--crimson-bright);font-weight:700">United States</td><td>H-1B Lottery</td><td>6–18 months</td><td><span class="sc-badge sc-no">No</span></td><td>—</td></tr>
+        <tr><td style="font-weight:700">Canada</td><td>Global Talent Stream</td><td style="color:var(--teal)">2 weeks</td><td><span class="sc-badge sc-yes">Yes</span></td><td><span class="sc-badge sc-yes">Yes</span></td></tr>
+        <tr><td style="font-weight:700">United Kingdom</td><td>Global Talent Visa</td><td style="color:var(--teal)">3–8 weeks</td><td><span class="sc-badge sc-yes">Yes</span></td><td><span class="sc-badge sc-yes">Yes</span></td></tr>
+        <tr><td style="font-weight:700">Germany</td><td>IT Specialist Visa</td><td>4–12 weeks</td><td><span class="sc-badge sc-partial">Limited</span></td><td><span class="sc-badge sc-yes">Yes</span></td></tr>
+        <tr><td style="font-weight:700">Singapore</td><td>Tech Pass</td><td style="color:var(--teal)">4–8 weeks</td><td><span class="sc-badge sc-yes">Yes</span></td><td><span class="sc-badge sc-yes">Yes</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Counter-arguments -->
+  <div class="reveal" style="margin-top:3rem">
+    <h3 style="font-family:var(--ff-display);margin-bottom:.3rem">Myths vs. Evidence</h3>
+    <p style="font-size:.8rem;color:var(--ice-dim);margin-bottom:1rem">Common claims about immigration — tested against data.</p>
+  </div>
+  <div class="reveal" style="overflow-x:auto">
+    <table class="scorecard">
+      <thead><tr><th>Claim</th><th>Verdict</th><th>Key Evidence</th></tr></thead>
+      <tbody>
+        <tr><td>"H-1B workers displace Americans"</td><td><span class="sc-verdict v-false">✗ Mostly False</span></td><td>No displacement found — Richmond Fed, 2025</td></tr>
+        <tr><td>"Restricting immigration creates jobs"</td><td><span class="sc-verdict v-false">✗ False</span></td><td>Firms offshore 0.3–0.9 jobs per unfilled H-1B — NBER</td></tr>
+        <tr><td>"Immigrants are a fiscal burden"</td><td><span class="sc-verdict v-false">✗ False</span></td><td>$14.5 trillion fiscal surplus since 1994 — Cato Institute</td></tr>
+        <tr><td>"We can innovate without immigrants"</td><td><span class="sc-verdict v-false">✗ False</span></td><td>36% of U.S. patents involve immigrants; 30% decline in 1920s — Stanford/NBER</td></tr>
+        <tr><td>"H-1B workers suppress wages"</td><td><span class="sc-verdict v-mixed">◐ Mixed</span></td><td>Firm-level effects exist, but economy-wide wages rise +1.7–2.6% — NBER</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box reveal">
+    <h3>What's at Stake</h3>
+    <p>The data is clear. Immigrant entrepreneurs are not a side note in the American innovation story — they are the story.</p>
+    <ul class="takeaway-list">
+      <li>Immigrant-founded companies employ <strong>15.4 million</strong> people and generate <strong>$8.6 trillion</strong> in revenue</li>
+      <li>Continued restriction could cost <strong>$12.1 trillion in GDP</strong> and <strong>15.7 million workers</strong> over the next decade</li>
+      <li>The 1920s showed that closing doors reduces innovation for <strong>40 years</strong></li>
+      <li>Canada, the UK, and others are actively recruiting the talent America turns away</li>
+      <li>H-1B reform alone could generate <strong>+$456B in GDP</strong> and <strong>+$113B in tax revenue</strong></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-brand">Built by Immigrants, Threatened by Policy</div>
+  <p>Harvard University · Data Visualization Group Project · Spring 2025<br>
+  Data sources: NFAP · American Immigration Council · NBER · Kauffman · Pew · Brookings · Hoover · Cato · CSET Georgetown</p>
+</footer>
+
+<script>
+// ─── CHART.JS DEFAULTS ─────────────────────
+Chart.defaults.color = '#9aa8c2';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
+
+const GOLD = '#d4a853', CRIMSON = '#c93050', TEAL = '#2ec4b6', ICE = '#e8edf5';
+const NAVY_MID = '#111d33';
+
+// ─── SCROLL REVEAL ─────────────────────────
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); }});
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ─── NAV HIDE ON SCROLL ────────────────────
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  document.getElementById('navbar').classList.toggle('hidden', y > lastY && y > 200);
+  lastY = y;
+  // Active link
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    const sec = document.querySelector(a.getAttribute('href'));
+    if (sec) {
+      const r = sec.getBoundingClientRect();
+      a.classList.toggle('active', r.top < 300 && r.bottom > 300);
+    }
+  });
+});
+
+// ─── ANIMATED COUNTERS ─────────────────────
+const counterIO = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    if (el.dataset.counted) return;
+    el.dataset.counted = '1';
+    const target = parseFloat(el.dataset.count);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const decimals = String(target).includes('.') ? 1 : 0;
+    const dur = 1200;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const val = (target * ease).toFixed(decimals);
+      el.textContent = prefix + val + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-num[data-count]').forEach(el => counterIO.observe(el));
+
+// ─── CHART: DONUT 500 ─────────────────────
+new Chart(document.getElementById('chartDonut500'), {
+  type: 'doughnut',
+  data: {
+    labels: ['1st-Gen Immigrants (109)', 'Children of Immigrants (122)', 'Non-Immigrant Founded (269)'],
+    datasets: [{
+      data: [109, 122, 269],
+      backgroundColor: [GOLD, TEAL, 'rgba(255,255,255,0.08)'],
+      borderWidth: 0,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} companies` } }
+    }
+  }
+});
+
+// ─── CHART: IMMIGRANT PREMIUM ──────────────
+new Chart(document.getElementById('chartPremium'), {
+  type: 'bar',
+  data: {
+    labels: ['U.S. Population', 'Labor Force', 'Business Owners', 'New Entrepreneurs', 'U.S. Patents', 'Total Innovation', 'Fortune 500 Founders', 'Unicorn Founders'],
+    datasets: [{
+      label: 'Immigrant Share',
+      data: [14.5, 17.1, 21.7, 25.4, 23, 36, 46.2, 55],
+      backgroundColor: ctx => {
+        const g = ctx.chart.ctx.createLinearGradient(0, 0, ctx.chart.width, 0);
+        g.addColorStop(0, GOLD); g.addColorStop(1, CRIMSON);
+        return g;
+      },
+      borderRadius: 4, barPercentage: 0.7
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: true,
+    scales: {
+      x: { max: 60, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } },
+      annotation: {
+        annotations: {
+          baseline: { type: 'line', xMin: 14.5, xMax: 14.5, borderColor: 'rgba(255,255,255,0.3)', borderWidth: 1, borderDash: [4, 4],
+            label: { display: true, content: '14.5% of population', position: 'start', font: { size: 10 }, color: 'rgba(255,255,255,0.5)' }
+          }
+        }
+      }
+    }
+  }
+});
+
+// ─── CHART: ORIGIN COUNTRIES ───────────────
+new Chart(document.getElementById('chartOrigin'), {
+  type: 'bar',
+  data: {
+    labels: ['India', 'Israel', 'UK', 'Canada', 'China/TW', 'France', 'Germany', 'Russia', 'Ukraine', 'Iran'],
+    datasets: [{
+      label: 'Billion-Dollar Companies',
+      data: [66, 54, 27, 22, 26, 18, 15, 11, 10, 8],
+      backgroundColor: [
+        '#ff9f43', '#ee5a24', '#0abde3', '#10ac84', '#e74c3c',
+        '#3498db', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22'
+      ],
+      borderRadius: 4, barPercentage: 0.65
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    scales: {
+      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v } },
+      x: { grid: { display: false } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// ─── HEATMAP TABLE ─────────────────────────
+(function() {
+  const countries = ['India','Israel','China/Taiwan','UK','Canada','France','Germany','Russia','Ukraine','Iran','Ireland','S. Africa','Lebanon','S. Korea','Nigeria'];
+  const industries = ['SaaS','AI/ML','Cyber','Fintech','Biotech','Hardware','E-Com','Space','Cloud','Social'];
+  const data = [
+    [5,5,2,4,2,2,3,1,4,1],[4,3,5,2,1,2,1,4,3,1],[2,3,1,1,1,5,3,1,2,1],
+    [3,4,2,3,2,1,1,1,2,1],[3,2,2,2,1,1,1,1,3,3],[2,2,1,2,4,1,1,1,1,1],
+    [2,1,1,3,1,1,1,3,1,1],[2,3,2,2,1,1,1,1,1,2],[2,1,1,2,1,1,1,1,1,2],
+    [1,3,1,3,1,1,4,1,2,1],[1,1,1,5,1,1,1,1,1,1],[1,1,1,2,1,1,1,4,1,1],
+    [1,1,1,1,5,1,1,1,1,1],[2,2,1,1,1,3,2,1,1,1],[2,1,1,3,1,1,1,1,1,1]
+  ];
+  const t = document.getElementById('heatmapTable');
+  let h = '<thead><tr><th></th>';
+  industries.forEach(i => h += `<th>${i}</th>`);
+  h += '</tr></thead><tbody>';
+  countries.forEach((c, ci) => {
+    h += `<tr><td>${c}</td>`;
+    data[ci].forEach(v => h += `<td class="h${v}">${v}</td>`);
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  t.innerHTML = h;
+})();
+
+// ─── CHART: US GEO ────────────────────────
+new Chart(document.getElementById('chartGeo'), {
+  type: 'bar',
+  data: {
+    labels: ['California', 'New York', 'Massachusetts', 'Illinois', 'Florida', 'Washington', 'Texas', 'Virginia'],
+    datasets: [
+      { label: 'Unicorns', data: [33, 8, 5, 2, 1, 1, 0, 0], backgroundColor: GOLD, borderRadius: 4 },
+      { label: 'Fortune 500', data: [30, 34, 8, 10, 8, 5, 15, 8], backgroundColor: TEAL, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    scales: {
+      y: { grid: { color: 'rgba(255,255,255,0.04)' } },
+      x: { grid: { display: false } }
+    },
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// ─── CHART: VISA PATHWAY ──────────────────
+new Chart(document.getElementById('chartVisa'), {
+  type: 'doughnut',
+  data: {
+    labels: ['F-1 Student (72%)', 'H-1B Work (15%)', 'Family/Other (5%)', 'O-1 Extraordinary (3%)', 'EB-1 Green Card (3%)', 'L-1 Transfer (2%)'],
+    datasets: [{
+      data: [72, 15, 5, 3, 3, 2],
+      backgroundColor: [GOLD, CRIMSON, TEAL, '#8e44ad', '#e67e22', '#3498db'],
+      borderWidth: 0, hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true, cutout: '55%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } } }
+  }
+});
+
+// ─── CHART: H-1B DENIAL RATES ─────────────
+(function() {
+  const years = [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  const rates = [5,3,3,7,8,6,10,15,24,21,13,4,2.2,3.5,2.5,2.2];
+  const eras = ['Obama','Obama','Obama','Obama','Obama','Obama','Trump','Trump','Trump','Trump','Trump','Biden','Biden','Biden','Biden','Trump 2'];
+  const bgColors = years.map((_, i) => {
+    const e = eras[i];
+    if (e === 'Obama') return 'rgba(41,128,185,0.15)';
+    if (e === 'Trump' || e === 'Trump 2') return 'rgba(201,48,80,0.15)';
+    return 'rgba(46,196,182,0.15)';
+  });
+
+  new Chart(document.getElementById('chartDenial'), {
+    type: 'bar',
+    data: {
+      labels: years.map(String),
+      datasets: [
+        { type: 'bar', label: 'Policy Era', data: rates.map(() => 26), backgroundColor: bgColors, borderWidth: 0, barPercentage: 1, categoryPercentage: 1, order: 2 },
+        { type: 'line', label: 'H-1B Denial Rate (%)', data: rates, borderColor: GOLD, backgroundColor: 'rgba(212,168,83,0.1)', pointBackgroundColor: GOLD, pointRadius: 5, pointHoverRadius: 8, tension: 0.3, fill: true, order: 1 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      scales: {
+        y: { max: 26, ticks: { callback: v => v <= 24 ? v + '%' : '' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        x: { grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => `FY ${ctx[0].label} — ${eras[ctx[0].dataIndex]}`,
+            label: ctx => ctx.datasetIndex === 1 ? `Denial Rate: ${ctx.raw}%` : null
+          },
+          filter: ctx => ctx.datasetIndex === 1
+        }
+      }
+    }
+  });
+})();
+
+// ─── CHART: GREEN CARD BACKLOG ────────────
+new Chart(document.getElementById('chartBacklog'), {
+  type: 'bar',
+  data: {
+    labels: ['EB-1', 'EB-2', 'EB-3', 'EB-5'],
+    datasets: [
+      { label: 'India', data: [10, 13, 12, 0], backgroundColor: CRIMSON, borderRadius: 4 },
+      { label: 'China', data: [4, 6, 4, 0], backgroundColor: GOLD, borderRadius: 4 },
+      { label: 'Rest of World', data: [0, 0, 0, 0], backgroundColor: TEAL, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    scales: {
+      y: { title: { display: true, text: 'Wait Time (Years)', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+      x: { grid: { display: false } }
+    },
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// ─── POLICY TIMELINE ──────────────────────
+(function() {
+  const events = [
+    { date: 'Jun 2012', text: 'DACA announced — protects ~800K young immigrants', dir: 'expand', era: 'obama', crit: true },
+    { date: 'Mar 2016', text: 'STEM OPT extension expanded to 24 months', dir: 'expand', era: 'obama', crit: false },
+    { date: 'Jan 2017', text: 'Travel Ban 1.0 — 7 countries; 700+ detained', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Apr 2017', text: '"Buy American, Hire American" Executive Order', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Sep 2017', text: 'Trump announces end of DACA', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Jun 2018', text: 'Supreme Court upholds travel ban', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Oct 2018', text: 'H-1B denial rate peaks at 24% (4× pre-Trump)', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Jun 2020', text: 'H-1B/L-1/J-1 entry suspended (COVID)', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Jan 2021', text: 'Biden begins rescinding Trump orders', dir: 'expand', era: 'biden', crit: false },
+    { date: 'Mar 2021', text: 'Biden rescinds "Buy American, Hire American"', dir: 'expand', era: 'biden', crit: false },
+    { date: 'Jan 2022', text: '22 new STEM OPT fields added', dir: 'expand', era: 'biden', crit: false },
+    { date: 'Oct 2022', text: 'H-1B denial rate drops to 2.2% (historic low)', dir: 'expand', era: 'biden', crit: false },
+    { date: 'Jan 2025', text: 'Trump 2nd term: border emergency, asylum block', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Sep 2025', text: '$100,000 H-1B fee goes into effect', dir: 'restrict', era: 'trump', crit: true },
+    { date: 'Jan 2026', text: 'Visa processing paused for 75 countries', dir: 'restrict', era: 'trump', crit: true },
+  ];
+  const tl = document.getElementById('policyTimeline');
+  events.forEach(e => {
+    const eraClass = e.era === 'obama' ? 'era-obama' : e.era === 'biden' ? 'era-biden' : 'era-trump';
+    const eraLabel = e.era === 'obama' ? 'Obama' : e.era === 'biden' ? 'Biden' : 'Trump';
+    tl.innerHTML += `<div class="tl-item tl-${e.dir === 'expand' ? 'expand' : 'restrict'} ${e.crit ? 'tl-critical' : ''}">
+      <span class="tl-date">${e.date} <span class="tl-era ${eraClass}">${eraLabel}</span></span>
+      <span class="tl-text">${e.text}</span>
+    </div>`;
+  });
+})();
+
+// ─── CHART: GDP SCENARIOS ─────────────────
+new Chart(document.getElementById('chartGDP'), {
+  type: 'bar',
+  data: {
+    labels: ['Further Restriction', 'Status Quo (Baseline)', 'Reform / Liberalization'],
+    datasets: [{
+      label: 'Cumulative GDP Impact (2025–2035)',
+      data: [-12.1, 0, 0.456],
+      backgroundColor: [CRIMSON, 'rgba(255,255,255,0.15)', TEAL],
+      borderRadius: 6, barPercentage: 0.55
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    scales: {
+      y: {
+        title: { display: true, text: 'Trillions USD', font: { size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.04)' },
+        ticks: { callback: v => (v >= 0 ? '+' : '') + v + 'T' }
+      },
+      x: { grid: { display: false } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// ─── CHART: 1920s PRECEDENT ───────────────
+new Chart(document.getElementById('chart1920s'), {
+  type: 'bar',
+  data: {
+    labels: ['Immigration Volume (K/yr)', 'Overall U.S. Invention', 'Native Scientist Patents'],
+    datasets: [
+      { label: 'Before Restriction (Pre-1921)', data: [360, 100, 100], backgroundColor: TEAL, borderRadius: 4 },
+      { label: 'After Restriction (1924–1965)', data: [165, 70, 40], backgroundColor: CRIMSON, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    scales: {
+      y: {
+        title: { display: true, text: 'Index (Pre-1921 = 100)', font: { size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.04)' },
+        max: 400
+      },
+      x: { grid: { display: false } }
+    },
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+</script>
+</body>
+</html>
